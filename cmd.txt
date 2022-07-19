@@ -1,2 +1,2 @@
 pipreqs . --encoding=utf8 --force
-flake8 div.py
+flake8 one-rectangle.py
