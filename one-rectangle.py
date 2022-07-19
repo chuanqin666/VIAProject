@@ -29,12 +29,8 @@ h = img.height
 root = ET.Element("div")
 div1 = ET.SubElement(root, "div")
 div1.set('class', 'div1')
-img = ET.SubElement(div1, "img")
-img.set('src', file_path)
-img.set('class', 'img')
 div2 = ET.SubElement(div1, "div")
 div2.set('class', 'div2')
-div2.text = str(element_region_value[0])
 
 # Convert to XML #
 tree = ET.ElementTree(root)
@@ -49,27 +45,21 @@ index_page = """
     <meta charset="UTF-8">
     <style>
         .div1 {
-            background-color: transparent;
-            height: 1000px;
-            width: 1000px;
-            padding: 0;
-            border: 1px solid black;
+            position:relative;
+            background: url(""" + str(file_path) + """) no-repeat center;
+            height: """ + str(h) + """px;
+            width: """ + str(w) + """px;
+            border: 5px solid black;
             display: block;
         }
-        .img {
-            position: absolute;
-        }
         .div2 {
-            position: absolute;
+            position:relative;
             background-color: transparent;
             height: """ + str(height_value[0]) + """px;
             width: """ + str(width_value[0]) + """px;
             margin-left: """ + str(x_value[0]) + """px;
             margin-top: """ + str(y_value[0]) + """px;
-            padding: 0;
-            text-align:center;
             box-sizing: border-box;
-            font-size:10pt;
             border: 5px solid yellow;
             display: block;
         }
