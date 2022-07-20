@@ -10,8 +10,7 @@
 
 ## CURRENT STAGE
 
-* Now the project has finished 1-rectangle case. There are two rectangles, one into another. 
-Larger rectangle has a webpage (or a web block) meaning, and smaller means a div container.
+* Now the project has finished vertical and horizontal case.
 
 
 ## MAIN FILE
