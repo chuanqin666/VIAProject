@@ -39,6 +39,34 @@ for i in range(len(x_value)):
     div[i] = ET.SubElement(container, "div")
     div[i].set('class', 'div'+str(i+1))
     div[i].text = " "
+    # if i == 0:
+    #     div_css = div_css + """.div""" + str(i) + """ {
+    #         position:relative;
+    #         text-align:center;
+    #         background-color: transparent;
+    #         height: """ + str(height_value[i]) + """px;
+    #         width: """ + str(width_value[i]) + """px;
+    #         margin-left: """ + str(x_value[i]) + """px;
+    #         margin-top: """ + str(y_value[i]) + """px;
+    #         outline: 5px solid yellow;
+    #         outline-offset: -5px;
+    #         display: block;
+    #     }
+    #     """
+    # else:
+    #     div_css = div_css + """.div""" + str(i) + """ {
+    #         position:relative;
+    #         text-align:center;
+    #         background-color: transparent;
+    #         height: """ + str(height_value[i]) + """px;
+    #         width: """ + str(width_value[i]) + """px;
+    #         margin-left: """ + str(x_value[i]-x_value[i-1]) + """px;
+    #         margin-top: """ + str(y_value[i]-y_value[i-1]) + """px;
+    #         outline: 5px solid yellow;
+    #         outline-offset: -5px;
+    #         display: block;
+    #     }
+    #    """
 
 # Convert to XML #
 tree = ET.ElementTree(container)
