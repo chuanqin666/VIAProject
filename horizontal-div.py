@@ -6,7 +6,7 @@ import json
 from jsonpath import jsonpath
 
 with open(
-          'json-doc/via_project_19Jul2022_22h46m_json_three_divs_vertical.json'
+          'json-doc/via_project_20Jul2022_14h26m_json_horizontal.json'
         ) as json_file:
     via_file = json.load(json_file)
 
@@ -64,23 +64,23 @@ index_page = """
              position:relative;
              text-align:center;
              background-color: transparent;
-             height: """ + str(height_value[1]) + """px;
-             width: """ + str(width_value[1]) + """px;
-             margin-left: """ + str(x_value[1]) + """px;
-             margin-top: """ + str(y_value[1]) + """px;
+             height: """ + str(height_value[2]) + """px;
+             width: """ + str(width_value[2]) + """px;
+             margin-left: """ + str(x_value[2]) + """px;
+             margin-top: """ + str(y_value[2]) + """px;
              outline: 5px solid yellow;
-             display: block;
+             display: inline-block;
          }
         .div2 {
              position:relative;
              text-align:center;
              background-color: transparent;
-             height: """ + str(height_value[2]) + """px;
-             width: """ + str(width_value[2]) + """px;
-             margin-left: """ + str(x_value[2]) + """px;
-             margin-top: """ + str(y_value[2]-y_value[1]-height_value[1]) + """px;
+             height: """ + str(height_value[1]) + """px;
+             width: """ + str(width_value[1]) + """px;
+             margin-left: """ + str(x_value[1]-x_value[2]-width_value[2]) + """px;
+             margin-top: """ + str(y_value[1]-y_value[2]) + """px;
              outline: 5px solid yellow;
-             display: block;
+             display: inline-block;
          }
         .div3 {
              position:relative;
@@ -101,9 +101,9 @@ index_page = """
 </html>
 """
 
-GET_HTML = "vertical-div.html"
+GET_HTML = "horizontal-div.html"
 f = open(GET_HTML, 'w')
 f.write(index_page)
 f.close()
 
-webbrowser.open("vertical-div.html")
+webbrowser.open("horizontal-div.html")
