@@ -6,6 +6,8 @@ import json
 from jsonpath import jsonpath
 
 with open('json-doc/via_project_18Jul2022_22h36m_json.json') as json_file:
+#with open('json-doc/via_project_19Jul2022_22h46m_json_right_border.json') as json_file:
+#with open('json-doc/via_project_19Jul2022_22h46m_json_right_bottom_border.json') as json_file:
     via_file = json.load(json_file)
 
 # Extract element content from JSON #
