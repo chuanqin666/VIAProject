@@ -5,49 +5,52 @@
     <meta charset="UTF-8">
     <style>
         .container {
-            position:relative;
+            display: flex;
+            position: relative;
             background: url(image/50723_jira_reactos_org_login_jsp_os__1.png) no-repeat center;
             height: 192px;
             width: 494px;
             border: 5px solid black;
-            display: block;
         }
         .div1 {
-             position:relative;
-             text-align:center;
+             order: 3;
+             position: relative;
+             text-align: center;
+             font-size: 10px;
+             background-color: transparent;
+             height: 39px;
+             width: 74px;
+             margin-left: 33px;
+             margin-top: 39px;
+             outline: 5px solid yellow;
+         }
+        .div2 {
+             order: 2;
+             position: relative;
+             text-align: center;
+             font-size: 10px;
+             background-color: transparent;
+             height: 34px;
+             width: 168px;
+             margin-left: 3px;
+             margin-top: 5px;
+             outline: 5px solid yellow;
+         }
+        .div3 {
+             order: 1;
+             position: relative;
+             text-align: center;
+             font-size: 10px;
              background-color: transparent;
              height: 34px;
              width: 100px;
              margin-left: 41px;
              margin-top: 5px;
              outline: 5px solid yellow;
-             display: inline-block;
-         }
-        .div2 {
-             position:relative;
-             text-align:center;
-             background-color: transparent;
-             height: 34px;
-             width: 168px;
-             margin-left: 3px;
-             margin-top: 0px;
-             outline: 5px solid yellow;
-             display: inline-block;
-         }
-        .div3 {
-             position:relative;
-             text-align:center;
-             background-color: transparent;
-             height: 39px;
-             width: 74px;
-             margin-left: 345px;
-             margin-top: 0px;
-             outline: 5px solid yellow;
-             display: block;
          }
     </style>
 </head>
 <body>
-        <div class="container"><div class="div1"> </div><div class="div2"> </div><div class="div3"> </div></div>
+        <div class="container"><div class="div1">1</div><div class="div2">2</div><div class="div3">3</div></div>
 </body>
 </html>

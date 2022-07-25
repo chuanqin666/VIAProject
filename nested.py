@@ -6,7 +6,7 @@ import json
 from jsonpath import jsonpath
 
 with open(
-          'json-doc/via_project_19Jul2022_22h46m_json_three_divs_vertical.json'
+          'json-doc/via_project_20Jul2022_23h54m_json_nested.json'
         ) as json_file:
     via_file = json.load(json_file)
 
@@ -35,10 +35,10 @@ div_css = ""
 container = ET.Element("div")
 container.set('class', 'container')
 
-for i in range(len(x_value)):
-    div[i] = ET.SubElement(container, "div")
-    div[i].set('class', 'div'+str(i+1))
-    div[i].text = str(i+1)
+div1 = ET.SubElement(container, "div")
+div1.set('class', 'div1')
+div2 = ET.SubElement(div1, "div")
+div2.set('class', 'div2')
 
 # Convert to XML #
 tree = ET.ElementTree(container)
@@ -46,6 +46,7 @@ io = BytesIO()
 tree.write(io)
 xml = io.getvalue().decode('UTF8')
 
+print(xml)
 index_page = """
 <!DOCTYPE html>
 <html lang="en">
@@ -55,27 +56,12 @@ index_page = """
         .container {
             position: relative;
             display: flex;
-            flex-direction: column;
             background: url(""" + str(file_path) + """) no-repeat center;
             height: """ + str(h) + """px;
             width: """ + str(w) + """px;
             border: 5px solid black;
         }
         .div1 {
-             order: 3;
-             position: relative;
-             text-align: center;
-             font-size: 10px;
-             background-color: transparent;
-             height: """ + str(height_value[0]) + """px;
-             width: """ + str(width_value[0]) + """px;
-             margin-left: """ + str(x_value[0]) + """px;
-             margin-top: """ + str(y_value[0]-y_value[2]-height_value[2]) + """px;
-             outline: 5px solid yellow;
-
-         }
-        .div2 {
-             order: 1;
              position: relative;
              text-align: center;
              font-size: 10px;
@@ -84,21 +70,19 @@ index_page = """
              width: """ + str(width_value[1]) + """px;
              margin-left: """ + str(x_value[1]) + """px;
              margin-top: """ + str(y_value[1]) + """px;
-             outline: 5px solid yellow;
-
+             outline: 3px solid yellow;
          }
-        .div3 {
-             order: 2;
+        .div2 {
              position: relative;
              text-align: center;
              font-size: 10px;
              background-color: transparent;
-             height: """ + str(height_value[2]) + """px;
-             width: """ + str(width_value[2]) + """px;
-             margin-left: """ + str(x_value[2]) + """px;
-             margin-top: """ + str(y_value[2]-y_value[1]-height_value[1]) + """px;
-             outline: 5px solid yellow;
-        }
+             height: """ + str(height_value[0]) + """px;
+             width: """ + str(width_value[0]) + """px;
+             margin-left: """ + str(x_value[0]-x_value[1]) + """px;
+             margin-top: """ + str(y_value[0]-y_value[1]) + """px;
+             outline: 3px solid yellow;
+         }
     </style>
 </head>
 <body>
@@ -107,9 +91,9 @@ index_page = """
 </html>
 """
 
-GET_HTML = "vertical-div.html"
+GET_HTML = "nested.html"
 f = open(GET_HTML, 'w')
 f.write(index_page)
 f.close()
 
-webbrowser.open("vertical-div.html")
+webbrowser.open("nested.html")
