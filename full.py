@@ -59,7 +59,7 @@ for i in range(len(xy)):
         xy[i][1].append(0)
         xy[i][1].append(0)
 
-xy2 = sorted(xy, key=lambda k: (k[1][len(k[1]) - 1], k[1][0]))
+xy_sorted = sorted(xy, key=lambda k: (k[1][len(k[1]) - 1], k[1][0]))
 
 file_path = 'image/' + filename_value[0]
 
@@ -93,55 +93,58 @@ flag = 0
 div = {}
 div[0] = ET.Element("div")
 div[0].set('class', 'container')
-for i in range(len(xy2)):
-    div[xy2[i][0]] = ET.SubElement(div[xy2[i][1][len(xy2[i][1]) - 2]], "div")
-    div[xy2[i][0]].set('class', 'div div' + str(xy2[i][0]))
-    div[xy2[i][0]].text = str(xy2[i][0])
+for i in range(len(xy_sorted)):
+    div[xy_sorted[i][0]] = \
+        ET.SubElement(div[xy_sorted[i][1][len(xy_sorted[i][1]) - 2]], "div")
+    div[xy_sorted[i][0]].set('class', 'div div' + str(xy_sorted[i][0]))
+    div[xy_sorted[i][0]].text = str(xy_sorted[i][0])
     if i == 0:
-        div_css = div_css + """.div""" + str(xy2[i][0]) + """ {
-            left: """ + str(xy2[i][1][0]) + """px;
-            top: """ + str(xy2[i][1][1]) + """px;
-            width: """ + str(xy2[i][1][2]) + """px;
-            height: """ + str(xy2[i][1][3]) + """px;
+        div_css = div_css + """.div""" + str(xy_sorted[i][0]) + """ {
+            left: """ + str(xy_sorted[i][1][0]) + """px;
+            top: """ + str(xy_sorted[i][1][1]) + """px;
+            width: """ + str(xy_sorted[i][1][2]) + """px;
+            height: """ + str(xy_sorted[i][1][3]) + """px;
         }
         """
-    elif xy2[i][1][len(xy2[i][1]) - 1] == \
-            xy2[i - 1][1][len(xy2[i - 1][1]) - 1]:
-        if xy2[i - 1][1][5] > xy2[i][1][1] >= xy2[i - 1][1][1] \
-                or xy2[i][1][5] > xy2[i - 1][1][1] >= xy2[i][1][1]:
-            width += xy2[i - 1][1][2]
-            div_css = div_css + """.div""" + str(xy2[i][0]) + """ {
-            left: """ + str(xy2[i][1][0] - width) + """px;
-            top: """ + str(xy2[i][1][1] - height) + """px;
-            width: """ + str(xy2[i][1][2]) + """px;
-            height: """ + str(xy2[i][1][3]) + """px;
+    elif xy_sorted[i][1][len(xy_sorted[i][1]) - 1] == \
+            xy_sorted[i - 1][1][len(xy_sorted[i - 1][1]) - 1]:
+        if xy_sorted[i - 1][1][5] > xy_sorted[i][1][1] \
+                >= xy_sorted[i - 1][1][1] \
+                or xy_sorted[i][1][5] > xy_sorted[i - 1][1][1] \
+                >= xy_sorted[i][1][1]:
+            width += xy_sorted[i - 1][1][2]
+            div_css = div_css + """.div""" + str(xy_sorted[i][0]) + """ {
+            left: """ + str(xy_sorted[i][1][0] - width) + """px;
+            top: """ + str(xy_sorted[i][1][1] - height) + """px;
+            width: """ + str(xy_sorted[i][1][2]) + """px;
+            height: """ + str(xy_sorted[i][1][3]) + """px;
         }
         """
-            if xy2[i][1][3] > xy2[flag][1][3]:
+            if xy_sorted[i][1][3] > xy_sorted[flag][1][3]:
                 flag = i
         else:
-            if xy2[i][1][len(xy2[i][1]) - 1] == 0:
+            if xy_sorted[i][1][len(xy_sorted[i][1]) - 1] == 0:
                 width = 0
-            height += xy2[flag][1][3]
+            height += xy_sorted[flag][1][3]
             flag = i
-            div_css = div_css + """.div""" + str(xy2[i][0]) + """ {
+            div_css = div_css + """.div""" + str(xy_sorted[i][0]) + """ {
             clear: both;
-            left: """ + str(xy2[i][1][0] - width) + """px;
-            top: """ + str(xy2[i][1][1] - height) + """px;
-            width: """ + str(xy2[i][1][2]) + """px;
-            height: """ + str(xy2[i][1][3]) + """px;
+            left: """ + str(xy_sorted[i][1][0] - width) + """px;
+            top: """ + str(xy_sorted[i][1][1] - height) + """px;
+            width: """ + str(xy_sorted[i][1][2]) + """px;
+            height: """ + str(xy_sorted[i][1][3]) + """px;
         }
         """
     else:
         flag = i
-        width = xy[xy2[i][1][len(xy2[i][1]) - 1] - 1][1][0]
-        height = xy[xy2[i][1][len(xy2[i][1]) - 1] - 1][1][1]
-        div_css = div_css + """.div""" + str(xy2[i][0]) + """ {
+        width = xy[xy_sorted[i][1][len(xy_sorted[i][1]) - 1] - 1][1][0]
+        height = xy[xy_sorted[i][1][len(xy_sorted[i][1]) - 1] - 1][1][1]
+        div_css = div_css + """.div""" + str(xy_sorted[i][0]) + """ {
             clear: both;
-            left: """ + str(xy2[i][1][0] - width) + """px;
-            top: """ + str(xy2[i][1][1] - height) + """px;
-            width: """ + str(xy2[i][1][2]) + """px;
-            height: """ + str(xy2[i][1][3]) + """px;
+            left: """ + str(xy_sorted[i][1][0] - width) + """px;
+            top: """ + str(xy_sorted[i][1][1] - height) + """px;
+            width: """ + str(xy_sorted[i][1][2]) + """px;
+            height: """ + str(xy_sorted[i][1][3]) + """px;
         }
         """
 
