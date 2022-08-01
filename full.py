@@ -61,9 +61,6 @@ for i in range(len(xy)):
 
 xy2 = sorted(xy, key=lambda k: (k[1][len(k[1]) - 1], k[1][0]))
 
-print(xy)
-print(xy2)
-
 file_path = 'image/' + filename_value[0]
 
 img = Image.open(file_path)
