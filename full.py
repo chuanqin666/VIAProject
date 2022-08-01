@@ -61,6 +61,9 @@ for i in range(len(xy)):
 
 xy2 = sorted(xy, key=lambda k: (k[1][len(k[1]) - 1], k[1][0]))
 
+print(xy)
+print(xy2)
+
 file_path = 'image/' + filename_value[0]
 
 img = Image.open(file_path)
@@ -107,7 +110,8 @@ for i in range(len(xy2)):
         """
     elif xy2[i][1][len(xy2[i][1]) - 1] == \
             xy2[i - 1][1][len(xy2[i - 1][1]) - 1]:
-        if xy2[i - 1][1][5] > xy2[i][1][1] >= xy2[i - 1][1][1]:
+        if xy2[i - 1][1][5] > xy2[i][1][1] >= xy2[i - 1][1][1] \
+                or xy2[i][1][5] > xy2[i - 1][1][1] >= xy2[i][1][1]:
             width += xy2[i - 1][1][2]
             div_css = div_css + """.div""" + str(xy2[i][0]) + """ {
             left: """ + str(xy2[i][1][0] - width) + """px;
