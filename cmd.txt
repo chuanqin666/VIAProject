@@ -5,4 +5,6 @@ flake8 main.py
 flake8 vertical-div.py
 flake8 horizontal-div.py
 flake8 horizontalvertical.py
+flake8 block.py
 flake8 nested.py
+flake8 full.py
