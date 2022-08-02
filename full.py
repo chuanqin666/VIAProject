@@ -37,20 +37,20 @@ for i in range(len(y_value)):
     value[i + 1].append(x2_value[i])
     value[i + 1].append(y2_value[i])
 
-# Sort in left-top Y coordinate first, then sort in left-top X coordinate #
+# Sort in left-top Y coordinate first, then sort in left-top X coordinate. #
 xy = sorted(value.items(), key=lambda k: (k[1][1], k[1][0]))
 
 xy_column = {}  # All outer rectangle
 for i in range(len(xy) - 1):
     for n in range(i + 1, len(xy)):
-        # if it is an inner rectangle #
+        # if it is an inner rectangle. #
         if xy[i][1][0] < xy[n][1][0] \
                 < xy[n][1][4] < xy[i][1][4] \
                 and xy[i][1][1] < xy[n][1][1] \
                 < xy[n][1][5] < xy[i][1][5]:
             xy_column[i] = xy[i]
             for k in range(len(xy)):
-                # Check all inner rectangles of each outer rectangle #
+                # Check all inner rectangles of each outer rectangle. #
                 if xy_column[i][1][0] < xy[k][1][0] \
                         < xy[k][1][4] < xy_column[i][1][4] \
                         and xy_column[i][1][1] < xy[k][1][1] \
@@ -67,7 +67,7 @@ for i in range(len(xy)):
         xy[i][1].append(0)
         xy[i][1].append(0)
 
-# Sort in outer rectangle number first, then sort in left-top X coordinate #
+# Sort in outer rectangle number first, then sort in left-top X coordinate. #
 # [0]:Left-top X [1]:Left-top Y [2]:Width
 # [3]:Height [4]:Right-bottom X [5]:Right-bottom Y
 # [6]:The number of outer rectangle in the JSON file(as div number)
