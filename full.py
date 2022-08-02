@@ -61,6 +61,7 @@ for i in range(len(xy) - 1):
                     else:
                         xy[k][1][6] = xy_column[i][0]
                         xy[k][1][7] = i + 1
+
 # If it is the outermost rectangle, add two values 0 #
 for i in range(len(xy)):
     if len(xy[i][1]) <= 6:
