@@ -64,7 +64,7 @@ for i in range(len(xy) - 1):
 
 # If it is the outermost rectangle, add two values 0 #
 for i in range(len(xy)):
-    if len(xy[i][1]) <= 6:
+    if len(xy[i][1]) == 6:
         xy[i][1].append(0)
         xy[i][1].append(0)
 
