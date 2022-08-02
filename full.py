@@ -138,7 +138,7 @@ for i in range(len(xy_sorted)):
             height: """ + str(xy_sorted[i][1][3]) + """px;
         }
         """
-            # Check which rectangle is lower. #
+            # Check which rectangle's right-bottom Y coordinate is lower. #
             if xy_sorted[i][1][3] > xy_sorted[flag][1][3]:
                 flag = i
         # if the two rectangles are not in the same row. #
