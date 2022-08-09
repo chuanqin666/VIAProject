@@ -5,10 +5,9 @@ import webbrowser
 import json
 from jsonpath import jsonpath
 from collections import defaultdict
+import sys
 
-with open(
-        'json-doc/via_project_27Jul2022_9h13m_json_full.json'
-) as json_file:
+with open(sys.argv[1]) as json_file:
     via_file = json.load(json_file)
 
 # Extract element content from JSON #
