@@ -39,7 +39,7 @@ for i in range(len(y_value)):
 # Sort in left-top Y coordinate first, then sort in left-top X coordinate. #
 xy = sorted(value.items(), key=lambda k: (k[1][1], k[1][0]))
 
-xy_column = {}  # All outer rectangle
+xy_column = {}  # All outer rectangles
 for i in range(len(xy) - 1):
     for n in range(i + 1, len(xy)):
         # if it is an inner rectangle. #
@@ -73,6 +73,26 @@ for i in range(len(xy)):
 # [6]:The number of outer rectangle in the JSON file(as div number)
 # [7]:The number of outer rectangle in xy{}
 xy_sorted = sorted(xy, key=lambda k: (k[1][7], k[1][0]))
+
+# Finally adjust xy_sorted, sort in Left-top X if in the same row.
+for i in range(len(xy_sorted) - 1):
+    for n in range(i + 1, len(xy_sorted)):
+        if xy_sorted[i][1][7] == xy_sorted[n][1][7]:
+            if xy_sorted[i][1][1] > xy_sorted[n][1][5]:
+                temp = xy_sorted[i]
+                xy_sorted[i] = xy_sorted[n]
+                xy_sorted[n] = temp
+for i in range(len(xy_sorted) - 1):
+    for n in range(i + 1, len(xy_sorted)):
+        if xy_sorted[i][1][7] == xy_sorted[n][1][7]:
+            if (xy_sorted[i][1][5] > xy_sorted[n][1][1]
+                    >= xy_sorted[i][1][1]
+                    or xy_sorted[n][1][5] > xy_sorted[i][1][1]
+                    >= xy_sorted[n][1][1]):
+                if xy_sorted[i][1][0] > xy_sorted[n][1][0]:
+                    temp = xy_sorted[i]
+                    xy_sorted[i] = xy_sorted[n]
+                    xy_sorted[n] = temp
 
 # Get the height and width of the image. #
 file_path = 'image/' + filename_value[0]
@@ -126,10 +146,12 @@ for i in range(len(xy_sorted)):
         # Check if the two rectangles are in the same row:
         # The first rectangle is higher than the second rectangle
         # OR the second rectangle is higher than the first rectangle
-        if xy_sorted[i - 1][1][5] > xy_sorted[i][1][1] \
-                >= xy_sorted[i - 1][1][1] \
-                or xy_sorted[i][1][5] > xy_sorted[i - 1][1][1] \
-                >= xy_sorted[i][1][1]:
+        # AND the second rectangle is completely after the first rectangle
+        if (xy_sorted[i - 1][1][5] > xy_sorted[i][1][1]
+            >= xy_sorted[i - 1][1][1]
+            or xy_sorted[i][1][5] > xy_sorted[i - 1][1][1]
+            >= xy_sorted[i][1][1]) \
+                and xy_sorted[i - 1][1][4] <= xy_sorted[i][1][0]:
             left += xy_sorted[i - 1][1][2]
             div_css = div_css + """.div""" + str(xy_sorted[i][0]) + """ {
             left: """ + str(xy_sorted[i][1][0] - left) + """px;
@@ -138,7 +160,7 @@ for i in range(len(xy_sorted)):
             height: """ + str(xy_sorted[i][1][3]) + """px;
         }
         """
-            # Check which rectangle's right-bottom Y coordinate is lower. #
+            # Check which rectangle's right-bottom Y coordinate is larger. #
             if xy_sorted[i][1][3] > xy_sorted[flag][1][3]:
                 flag = i
         # if the two rectangles are not in the same row. #
