@@ -42,19 +42,27 @@ xy = sorted(value.items(), key=lambda k: (k[1][1], k[1][0]))
 xy_column = {}  # All outer rectangles
 for i in range(len(xy) - 1):
     for n in range(i + 1, len(xy)):
-        # if it is an inner rectangle. #
-        if xy[i][1][0] < xy[n][1][0] \
-                < xy[n][1][4] < xy[i][1][4] \
-                and xy[i][1][1] < xy[n][1][1] \
-                < xy[n][1][5] < xy[i][1][5]:
+        # if it is an outer rectangle. #
+        if (xy[i][1][0] <= xy[n][1][0]
+            < xy[n][1][4] <= xy[i][1][4]
+            and xy[i][1][1] <= xy[n][1][1]
+            < xy[n][1][5] <= xy[i][1][5]) \
+                and not (xy[i][1][0] == xy[n][1][0]
+                         and xy[n][1][4] == xy[i][1][4]
+                         and xy[i][1][1] == xy[n][1][1]
+                         and xy[n][1][5] == xy[i][1][5]):
             xy_column[i] = xy[i]
             for k in range(len(xy)):
                 # Check all inner rectangles of each outer rectangle. #
-                if xy_column[i][1][0] < xy[k][1][0] \
-                        < xy[k][1][4] < xy_column[i][1][4] \
-                        and xy_column[i][1][1] < xy[k][1][1] \
-                        < xy[k][1][5] < xy_column[i][1][5]:
-                    if len(xy[k][1]) == 6:
+                if (xy_column[i][1][0] <= xy[k][1][0]
+                    < xy[k][1][4] <= xy_column[i][1][4]
+                    and xy_column[i][1][1] <= xy[k][1][1]
+                    < xy[k][1][5] <= xy_column[i][1][5]) \
+                        and not (xy_column[i][1][0] == xy[k][1][0]
+                                 and xy[k][1][4] == xy_column[i][1][4]
+                                 and xy_column[i][1][1] == xy[k][1][1]
+                                 and xy[k][1][5] == xy_column[i][1][5]):
+                    if len(xy[k][1]) <= 6:
                         xy[k][1].append(xy_column[i][0])
                         xy[k][1].append(i + 1)
                     else:
