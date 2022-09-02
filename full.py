@@ -139,7 +139,8 @@ for i in range(len(xy_sorted)):
     # Create all divs #
     div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "div")
     div[xy_sorted[i][0]].set('class', 'div div' + str(xy_sorted[i][0]))
-    div[xy_sorted[i][0]].text = str(xy_sorted[i][0])
+    # div[xy_sorted[i][0]].text = str(xy_sorted[i][0])
+    div[xy_sorted[i][0]].text = " "
     # If it is the first rectangle in xy_sorted, establish it directly. #
     if i == 0:
         div_css = div_css + """.div""" + str(xy_sorted[i][0]) + """ {
@@ -158,8 +159,7 @@ for i in range(len(xy_sorted)):
         if (xy_sorted[i - 1][1][5] > xy_sorted[i][1][1]
             >= xy_sorted[i - 1][1][1]
             or xy_sorted[i][1][5] > xy_sorted[i - 1][1][1]
-            >= xy_sorted[i][1][1]) \
-                and xy_sorted[i - 1][1][4] <= xy_sorted[i][1][0]:
+            >= xy_sorted[i][1][1]):
             left += xy_sorted[i - 1][1][2]
             div_css = div_css + """.div""" + str(xy_sorted[i][0]) + """ {
             left: """ + str(xy_sorted[i][1][0] - left) + """px;

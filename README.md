@@ -26,6 +26,8 @@ to read the json document of VIA format image and output the relevant HTML file
 * block.py: The python file for horizontalvertical case, using display: block and float: left.
 * full.py: The python file for complex case, can be suit for any kind of cases of rectangle.
 * val.py: The python file for multi-complex case(headers, forms, footers), can be suit for any kind of cases of rectangle.
+* ocr_functions.py: OCR functions used in this project.
+* OCR.py: val.py with Tesseract function for recognizing text and display inside DIVs.
 
 * The Death of Socrates by David.html: The output HTML file after running main.py
 * one-rectangle.html: The output HTML file after running one-rectangle.py
@@ -37,6 +39,7 @@ to read the json document of VIA format image and output the relevant HTML file
 * block.html: The output HTML file after running block.py
 * full.html: The output HTML file after running full.py
 * val.html: The output HTML file after running val.py
+* OCR.html: The output HTML file after running OCR.py
 
 * image folder: Store the images in this project
 * json-doc folder: Store the Json file in this project

@@ -1,20 +1,22 @@
-from PIL import Image
+import sys
+sys.path.append('./venv/Lib/site-packages')
 import xml.etree.ElementTree as ET
 from io import BytesIO
 import webbrowser
 import json
 from jsonpath import jsonpath
 from collections import defaultdict
-import sys
+from ocr_functions import ocr_recognition
+import cv2
 
 #####################################################################
 # Please enter command line to start:                               #
-# Headers: python val.py val_json/via_export_json_raw_data_100.json #
-# Forms: python val.py val_json/via_export_jsonn_08072020.json      #
-# Footers: python val.py val_json/via_export_json.json              #
+# Headers: python OCR.py val_json/via_export_json_raw_data_100.json #
+# Forms: python OCR.py val_json/via_export_jsonn_08072020.json      #
+# Footers: python OCR.py val_json/via_export_json.json              #
 #####################################################################
 
-# with open('val_json/via_export_jsonn_08072020.json') as json_file:
+# with open('val_json/via_export_json_raw_data_100.json') as json_file:
 with open(sys.argv[1]) as json_file:
     json = json.load(json_file)
 
@@ -23,7 +25,9 @@ div_css = ""
 xml_tree = ""
 form = ET.Element("body")
 for z in range(len(keys)):
+    print(z)
     via_file = json[keys[z]]
+
     # Extract element content from JSON #
     filename_value = jsonpath(via_file, "$..filename")
     size_value = jsonpath(via_file, "$..size")
@@ -67,9 +71,9 @@ for z in range(len(keys)):
                     # Check all inner rectangles of each outer rectangle. #
                     if k is not i:
                         if (xy_column[i][1][0] <= xy[k][1][0]
-                                < xy[k][1][4] <= xy_column[i][1][4]
-                                and xy_column[i][1][1] <= xy[k][1][1]
-                                < xy[k][1][5] <= xy_column[i][1][5]) \
+                            < xy[k][1][4] <= xy_column[i][1][4]
+                            and xy_column[i][1][1] <= xy[k][1][1]
+                            < xy[k][1][5] <= xy_column[i][1][5]) \
                                 and not (xy_column[i][1][0] == xy[k][1][0]
                                          and xy[k][1][4] == xy_column[i][1][4]
                                          and xy_column[i][1][1] == xy[k][1][1]
@@ -102,11 +106,11 @@ for z in range(len(keys)):
     # Sort in outer rectangle number first, then sort in left-top X. #
     # [0]:Left-top X [1]:Left-top Y [2]:Width
     # [3]:Height [4]:Right-bottom X [5]:Right-bottom Y
-    # [6]:The number of outer rectangle in the JSON file(as div number)
+    # [6]:The number of outer rectangle in the JSON file(as DIV number)
     # [7]:The number of outer rectangle in xy{}
     xy_sorted = sorted(xy, key=lambda k: (k[1][7], k[1][0]))
 
-    # Finally adjust xy_sorted, sort in Left-top X if in the same row.
+    # Finally adjust xy_sorted, sort in Left-top X if in the same row. #
     for i in range(len(xy_sorted) - 1):
         for n in range(i + 1, len(xy_sorted)):
             if xy_sorted[i][1][7] == xy_sorted[n][1][7]:
@@ -127,13 +131,12 @@ for z in range(len(keys)):
                         xy_sorted[n] = temp
 
     # Get the height and width of the image. #
-    # file_path = 'val_img/' + filename_value[0].strip(".\\")
-    file_path = 'image/' + filename_value[0].strip(".\\")
-    img = Image.open(file_path)
-    w = img.width
-    h = img.height
+    file_path = 'val_img/' + filename_value[0].strip(".\\")
+    img = cv2.imread(file_path)
+    h = len(img)
+    w = len(img[0])
 
-    # div_css records all the divs' style. #
+    # div_css records all the DIVs' style. #
     div_css = div_css + """.container_""" + str(z) + """ {
                 clear: both;
                 float: left;
@@ -147,10 +150,12 @@ for z in range(len(keys)):
             }
             .div""" + str(z) + """ {
                 position: relative;
-                text-align: center;
                 font-size: 10px;
                 display: block;
                 float: left;
+                color: red;
+                text-align:center;
+                white-space: pre-line;
                 background-color: transparent;
                 outline: 3px solid yellow;
             }
@@ -163,13 +168,56 @@ for z in range(len(keys)):
     div = {}
     div[0] = ET.SubElement(form, "div")
     div[0].set('class', 'container_' + str(z))
+
     for i in range(len(xy_sorted)):
-        # Create all divs #
+        # Create all DIVs #
         div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "div")
         div[xy_sorted[i][0]].set('class', 'div' + str(z) +
                                  ' div' + str(z) + '_' + str(xy_sorted[i][0]))
         # div[xy_sorted[i][0]].text = str(xy_sorted[i][0])
-        div[xy_sorted[i][0]].text = " "
+
+        # Use Tesseract to recognize the text and display inside DIVs. #
+        if xy_sorted[i] not in xy_column.values():
+            if xy_sorted[i][1][2] == 0 \
+                    or xy_sorted[i][1][3] == 0 \
+                    or xy_sorted[i][1][4] < 0 \
+                    or xy_sorted[i][1][5] < 0 \
+                    or xy_sorted[i][1][0] > w \
+                    or xy_sorted[i][1][1] > h:
+                div[xy_sorted[i][0]].text = " "
+            else:
+                if xy_sorted[i][1][0] < 0:
+                    left_x = 0
+                else:
+                    left_x = xy_sorted[i][1][0]
+
+                if xy_sorted[i][1][1] < 0:
+                    left_y = 0
+                else:
+                    left_y = xy_sorted[i][1][1]
+
+                if xy_sorted[i][1][4] + 1 > w:
+                    right_x = w
+                else:
+                    right_x = xy_sorted[i][1][4] + 1
+
+                if xy_sorted[i][1][5] + 1 > h:
+                    right_y = h
+                else:
+                    right_y = xy_sorted[i][1][5] + 1
+
+                img_crop = img[
+                           int(left_y): int(right_y),
+                           int(left_x): int(right_x)
+                           ]
+                text = ocr_recognition(img_crop)
+                if text[1]:
+                    div[xy_sorted[i][0]].text = str(text[1])
+                else:
+                    div[xy_sorted[i][0]].text = " "
+        else:
+            div[xy_sorted[i][0]].text = " "
+
         # If it is the first rectangle in xy_sorted, establish it directly. #
         if i == 0:
             div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
@@ -267,9 +315,9 @@ index_page = """
 </html>
 """
 
-GET_HTML = "val.html"
+GET_HTML = "OCR.html"
 f = open(GET_HTML, 'w')
 f.write(index_page)
 f.close()
 
-webbrowser.open("val.html")
+webbrowser.open("OCR.html")
