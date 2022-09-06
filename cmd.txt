@@ -11,6 +11,7 @@ flake8 nested.py
 flake8 full.py
 flake8 val.py
 flake8 OCR.py
+flake8 test.py
 
 python full.py json-doc/4074_help_opera_com_73.json
 python val.py val_json/via_export_json.json

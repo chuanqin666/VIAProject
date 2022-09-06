@@ -16,8 +16,8 @@ import cv2
 # Footers: python OCR.py val_json/via_export_json.json              #
 #####################################################################
 
-# with open('val_json/test.json') as json_file:
-with open(sys.argv[1]) as json_file:
+with open('val_json/test.json') as json_file:
+    # with open(sys.argv[1]) as json_file:
     json = json.load(json_file)
 
 keys = list(json.keys())
@@ -480,9 +480,9 @@ index_page = """
 </html>
 """
 
-GET_HTML = "ORC.html"
+GET_HTML = "test.html"
 f = open(GET_HTML, 'w')
 f.write(index_page)
 f.close()
 
-webbrowser.open("ORC.html")
+webbrowser.open("test.html")

@@ -128,7 +128,7 @@ for z in range(len(keys)):
 
     # Get the height and width of the image. #
     # file_path = 'val_img/' + filename_value[0].strip(".\\")
-    file_path = 'image/' + filename_value[0].strip(".\\")
+    file_path = 'val_img/' + filename_value[0].strip(".\\")
     img = Image.open(file_path)
     w = img.width
     h = img.height
@@ -168,8 +168,8 @@ for z in range(len(keys)):
         div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "div")
         div[xy_sorted[i][0]].set('class', 'div' + str(z) +
                                  ' div' + str(z) + '_' + str(xy_sorted[i][0]))
-        # div[xy_sorted[i][0]].text = str(xy_sorted[i][0])
-        div[xy_sorted[i][0]].text = " "
+        div[xy_sorted[i][0]].text = str(xy_sorted[i][0])
+        # div[xy_sorted[i][0]].text = " "
         # If it is the first rectangle in xy_sorted, establish it directly. #
         if i == 0:
             div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {

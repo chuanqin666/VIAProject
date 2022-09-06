@@ -10,7 +10,7 @@
 
 ## CURRENT STAGE
 
-* Now the project has finished vertical and horizontal case.
+* Now the project has finished DIVs with text.
 
 
 ## MAIN FILE
@@ -50,3 +50,5 @@ to read the json document of VIA format image and output the relevant HTML file
   * cmd.txt: Record some commands to remind me.
   * requirements.txt: Some libraries used in this project.
   * ADEVI user experience.txt: Useless in this project.
+  * test.py: Just for new changes test.
+  * test.html: The output HTML file after running test.py
