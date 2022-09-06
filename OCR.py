@@ -480,9 +480,9 @@ index_page = """
 </html>
 """
 
-GET_HTML = "ORC.html"
+GET_HTML = "OCR.html"
 f = open(GET_HTML, 'w')
 f.write(index_page)
 f.close()
 
-webbrowser.open("ORC.html")
+webbrowser.open("OCR.html")
