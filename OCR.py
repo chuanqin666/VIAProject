@@ -16,7 +16,7 @@ import cv2
 # Footers: python OCR.py val_json/via_export_json.json              #
 #####################################################################
 
-# with open('val_json/test.json') as json_file:
+# with open('val_json/via_export_jsonn_08072020.json') as json_file:
 with open(sys.argv[1]) as json_file:
     json = json.load(json_file)
 
@@ -55,9 +55,9 @@ def sort(value_dict):
                     # Check all inner rectangles of each outer rectangle. #
                     if k is not i:
                         if (xy_column[i][1][0] <= xy[k][1][0]
-                                <= xy[k][1][4] <= xy_column[i][1][4]
-                                and xy_column[i][1][1] <= xy[k][1][1]
-                                <= xy[k][1][5] <= xy_column[i][1][5]) \
+                            <= xy[k][1][4] <= xy_column[i][1][4]
+                            and xy_column[i][1][1] <= xy[k][1][1]
+                            <= xy[k][1][5] <= xy_column[i][1][5]) \
                                 and not (xy_column[i][1][0] == xy[k][1][0]
                                          and xy[k][1][4] == xy_column[i][1][4]
                                          and xy_column[i][1][1] == xy[k][1][1]
@@ -84,11 +84,11 @@ def sort(value_dict):
                                     xy[k][1][7] = i + 1
                                 elif (xy[xy[k][1][7] - 1][1][0]
                                       == xy_column[i][1][0]
-                                        and xy_column[i][1][4]
+                                      and xy_column[i][1][4]
                                       == xy[xy[k][1][7] - 1][1][4]
-                                        and xy[xy[k][1][7] - 1][1][1]
+                                      and xy[xy[k][1][7] - 1][1][1]
                                       == xy_column[i][1][1]
-                                        and xy_column[i][1][5]
+                                      and xy_column[i][1][5]
                                       == xy[xy[k][1][7] - 1][1][5]):
                                     if i >= xy[k][1][7] - 1:
                                         xy[k][1][6] = xy_column[i][0]
@@ -227,6 +227,39 @@ def recur(value, xy_sorted):
         return xy_sorted, xy, xy_column, value
 
 
+def final(xy_sorted, count):
+    flg = 0
+    count += 1
+    # Finally adjust xy_sorted, sort in Left-top X if in the same row. #
+    for i in range(len(xy_sorted) - 1):
+        for n in range(i + 1, len(xy_sorted)):
+            if xy_sorted[i][1][7] == xy_sorted[n][1][7]:
+                if xy_sorted[i][1][1] >= xy_sorted[n][1][5]:
+                    flg += 1
+                    temp = xy_sorted[i]
+                    xy_sorted[i] = xy_sorted[n]
+                    xy_sorted[n] = temp
+    for i in range(len(xy_sorted) - 1):
+        for n in range(i + 1, len(xy_sorted)):
+            if xy_sorted[i][1][7] == xy_sorted[n][1][7]:
+                if (xy_sorted[i][1][5] > xy_sorted[n][1][1]
+                    >= xy_sorted[i][1][1]
+                    or xy_sorted[n][1][5] > xy_sorted[i][1][1]
+                    >= xy_sorted[n][1][1]) \
+                        or xy_sorted[n][1][5] > xy_sorted[i][1][5] \
+                        > xy_sorted[i][1][1] > xy_sorted[n][1][1] \
+                        or xy_sorted[i][1][5] > xy_sorted[n][1][5] \
+                        > xy_sorted[n][1][1] > xy_sorted[i][1][1]:
+                    if xy_sorted[i][1][0] > xy_sorted[n][1][0]:
+                        flg += 1
+                        temp = xy_sorted[i]
+                        xy_sorted[i] = xy_sorted[n]
+                        xy_sorted[n] = temp
+    if flg != 0 and count <= 3:
+        final(xy_sorted, count)
+    return xy_sorted
+
+
 for z in range(len(keys)):
     print(z)
     via_file = json[keys[z]]
@@ -268,34 +301,13 @@ for z in range(len(keys)):
 
     xy_sorted = sort(value)[0]
 
-    # xy = sort(value)[1]
-    # xy_column = sort(value)[2]
-
     xy_data = recur(value, xy_sorted)
     xy_sorted = recur(value, xy_sorted)[0]
     xy = recur(value, xy_sorted)[1]
     xy_column = recur(value, xy_sorted)[2]
     value = recur(value, xy_sorted)[3]
 
-    # Finally adjust xy_sorted, sort in Left-top X if in the same row.
-    for i in range(len(xy_sorted) - 1):
-        for n in range(i + 1, len(xy_sorted)):
-            if xy_sorted[i][1][7] == xy_sorted[n][1][7]:
-                if xy_sorted[i][1][1] >= xy_sorted[n][1][5]:
-                    temp = xy_sorted[i]
-                    xy_sorted[i] = xy_sorted[n]
-                    xy_sorted[n] = temp
-    for i in range(len(xy_sorted) - 1):
-        for n in range(i + 1, len(xy_sorted)):
-            if xy_sorted[i][1][7] == xy_sorted[n][1][7]:
-                if (xy_sorted[i][1][5] > xy_sorted[n][1][1]
-                        >= xy_sorted[i][1][1]
-                        or xy_sorted[n][1][5] > xy_sorted[i][1][1]
-                        >= xy_sorted[n][1][1]):
-                    if xy_sorted[i][1][0] > xy_sorted[n][1][0]:
-                        temp = xy_sorted[i]
-                        xy_sorted[i] = xy_sorted[n]
-                        xy_sorted[n] = temp
+    xy_sorted = final(xy_sorted, 0)
 
     # Get the height and width of the image. #
     file_path = 'val_img/' + filename_value[0].strip(".\\")
@@ -338,25 +350,27 @@ for z in range(len(keys)):
     # Build ElementTree #
     top = 0  # Height needs to be subtracted
     left = 0  # Width needs to be subtracted
-    flag = 0
+    flag_top = 0
+    flag_right = 0
     div = {}
     div[0] = ET.SubElement(form, "div")
     div[0].set('class', 'container_' + str(z))
+    # div[0].text = str(z)
     for i in range(len(xy_sorted)):
         # Create all divs #
         div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "div")
         if xy_sorted[i][1][9] == "group":
             div[xy_sorted[i][0]].set(
                 'class', 'div_group' + str(z) +
-                ' div' + str(z) + '_' + str(xy_sorted[i][0]))
+                         ' div' + str(z) + '_' + str(xy_sorted[i][0]))
         else:
             div[xy_sorted[i][0]].set(
                 'class', 'div' + str(z) +
-                ' div' + str(z) + '_' + str(xy_sorted[i][0]))
+                         ' div' + str(z) + '_' + str(xy_sorted[i][0]))
         # div[xy_sorted[i][0]].text = str(xy_sorted[i][0])
         # div[xy_sorted[i][0]].text = " "
 
-        # # Use Tesseract to recognize the text and display inside DIVs. #
+        # Use Tesseract to recognize the text and display inside DIVs. #
         if xy_sorted[i] not in xy_column.values():
             if xy_sorted[i][1][2] == 0 \
                     or xy_sorted[i][1][3] == 0 \
@@ -417,10 +431,14 @@ for z in range(len(keys)):
             # The first rectangle is higher than the second rectangle
             # OR the second rectangle is higher than the first rectangle
             if (xy_sorted[i - 1][1][5] > xy_sorted[i][1][1]
-                    >= xy_sorted[i - 1][1][1]
-                    or xy_sorted[i][1][5] > xy_sorted[i - 1][1][1]
-                    >= xy_sorted[i][1][1]):
-                left = xy_sorted[i - 1][1][4]
+                >= xy_sorted[i - 1][1][1]
+                or xy_sorted[i][1][5] > xy_sorted[i - 1][1][1]
+                >= xy_sorted[i][1][1]) \
+                    or xy_sorted[i - 1][1][5] > xy_sorted[i][1][5] \
+                    > xy_sorted[i][1][1] > xy_sorted[i - 1][1][1] \
+                    or xy_sorted[i][1][5] > xy_sorted[i - 1][1][5] \
+                    > xy_sorted[i - 1][1][1] > xy_sorted[i][1][1]:
+                left = xy_sorted[flag_right][1][4]
                 div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
                     margin-left: """ + str(xy_sorted[i][1][0] - left) + """px;
                     margin-top: """ + str(xy_sorted[i][1][1] - top) + """px;
@@ -429,16 +447,20 @@ for z in range(len(keys)):
                 }
                 """
                 # Check which rectangle's is lower. #
-                if xy_sorted[i][1][5] > xy_sorted[flag][1][5]:
-                    flag = i
+                if xy_sorted[i][1][5] > xy_sorted[flag_top][1][5]:
+                    flag_top = i
+                # Check which rectangle's is longer. #
+                if xy_sorted[i][1][4] > xy_sorted[flag_right][1][4]:
+                    flag_right = i
             # if the two rectangles are not in the same row. #
             else:
                 if xy_sorted[i][1][7] == 0:
                     left = 0
                 else:
                     left = xy[xy_sorted[i][1][7] - 1][1][0]
-                top = xy_sorted[flag][1][5]
-                flag = i
+                top = xy_sorted[flag_top][1][5]
+                flag_top = i
+                flag_right = i
                 div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
                     clear: both;
                     margin-left: """ + str(xy_sorted[i][1][0] - left) + """px;
@@ -449,7 +471,8 @@ for z in range(len(keys)):
                 """
         # If two rectangles do not belong to the same outer rectangle. #
         else:
-            flag = i
+            flag_top = i
+            flag_right = i
             left = xy[xy_sorted[i][1][7] - 1][1][0]
             top = xy[xy_sorted[i][1][7] - 1][1][1]
             div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
