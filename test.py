@@ -16,7 +16,7 @@ import cv2
 # Footers: python OCR.py val_json/via_export_json.json              #
 #####################################################################
 
-with open('val_json/test.json') as json_file:
+with open('val_json/val.json') as json_file:
     # with open(sys.argv[1]) as json_file:
     json = json.load(json_file)
 
@@ -195,6 +195,8 @@ def group(value, xy_sorted):
                                                                         if xy_sorted[d][1][0] \
                                                                                 < xy_sorted[lf][1][0]:
                                                                             lf = d
+                        # elif xy_sorted[b][1][1] >= xy_sorted[a][1][5] and (xy_sorted[b][1][0] <= xy_sorted[a][1][4] or xy_sorted[b][1][4] >= xy_sorted[a][1][0] or (xy_sorted[b][1][0] <= xy_sorted[a][1][0] and xy_sorted[b][1][4] >= xy_sorted[a][1][4])):
+
         if (xy_sorted[a][1][0] is not xy_sorted[lf][1][0]) \
                 or (xy_sorted[a][1][1] is not xy_sorted[tp][1][1]) \
                 or (xy_sorted[a][1][4] is not xy_sorted[rt][1][4]) \
@@ -225,6 +227,39 @@ def recur(value, xy_sorted):
         recur(value, xy_sorted)
     else:
         return xy_sorted, xy, xy_column, value
+
+
+def final(xy_sorted, count):
+    flg = 0
+    count += 1
+    # Finally adjust xy_sorted, sort in Left-top X if in the same row. #
+    for i in range(len(xy_sorted) - 1):
+        for n in range(i + 1, len(xy_sorted)):
+            if xy_sorted[i][1][7] == xy_sorted[n][1][7]:
+                if xy_sorted[i][1][1] >= xy_sorted[n][1][5]:
+                    flg += 1
+                    temp = xy_sorted[i]
+                    xy_sorted[i] = xy_sorted[n]
+                    xy_sorted[n] = temp
+    for i in range(len(xy_sorted) - 1):
+        for n in range(i + 1, len(xy_sorted)):
+            if xy_sorted[i][1][7] == xy_sorted[n][1][7]:
+                if (xy_sorted[i][1][5] > xy_sorted[n][1][1]
+                        >= xy_sorted[i][1][1]
+                        or xy_sorted[n][1][5] > xy_sorted[i][1][1]
+                        >= xy_sorted[n][1][1])\
+                        or xy_sorted[n][1][5] > xy_sorted[i][1][5] \
+                        > xy_sorted[i][1][1] > xy_sorted[n][1][1]\
+                        or xy_sorted[i][1][5] > xy_sorted[n][1][5] \
+                        > xy_sorted[n][1][1] > xy_sorted[i][1][1]:
+                    if xy_sorted[i][1][0] > xy_sorted[n][1][0]:
+                        flg += 1
+                        temp = xy_sorted[i]
+                        xy_sorted[i] = xy_sorted[n]
+                        xy_sorted[n] = temp
+    if flg != 0 and count <= 3:
+        final(xy_sorted, count)
+    return xy_sorted
 
 
 for z in range(len(keys)):
@@ -268,35 +303,14 @@ for z in range(len(keys)):
 
     xy_sorted = sort(value)[0]
 
-    # xy = sort(value)[1]
-    # xy_column = sort(value)[2]
-
     xy_data = recur(value, xy_sorted)
     xy_sorted = recur(value, xy_sorted)[0]
     xy = recur(value, xy_sorted)[1]
     xy_column = recur(value, xy_sorted)[2]
     value = recur(value, xy_sorted)[3]
 
-    # Finally adjust xy_sorted, sort in Left-top X if in the same row.
-    for i in range(len(xy_sorted) - 1):
-        for n in range(i + 1, len(xy_sorted)):
-            if xy_sorted[i][1][7] == xy_sorted[n][1][7]:
-                if xy_sorted[i][1][1] >= xy_sorted[n][1][5]:
-                    temp = xy_sorted[i]
-                    xy_sorted[i] = xy_sorted[n]
-                    xy_sorted[n] = temp
-    for i in range(len(xy_sorted) - 1):
-        for n in range(i + 1, len(xy_sorted)):
-            if xy_sorted[i][1][7] == xy_sorted[n][1][7]:
-                if (xy_sorted[i][1][5] > xy_sorted[n][1][1]
-                        >= xy_sorted[i][1][1]
-                        or xy_sorted[n][1][5] > xy_sorted[i][1][1]
-                        >= xy_sorted[n][1][1]):
-                    if xy_sorted[i][1][0] > xy_sorted[n][1][0]:
-                        temp = xy_sorted[i]
-                        xy_sorted[i] = xy_sorted[n]
-                        xy_sorted[n] = temp
-
+    xy_sorted = final(xy_sorted, 0)
+    print(xy_sorted)
     # Get the height and width of the image. #
     file_path = 'val_img/' + filename_value[0].strip(".\\")
     img = cv2.imread(file_path)
@@ -323,6 +337,7 @@ for z in range(len(keys)):
                 float: left;
                 background-color: transparent;
                 outline: 3px solid yellow;
+                box-sizing: border-box;
             }
             .div_group""" + str(z) + """ {
                 position: relative;
@@ -338,107 +353,202 @@ for z in range(len(keys)):
     # Build ElementTree #
     top = 0  # Height needs to be subtracted
     left = 0  # Width needs to be subtracted
-    flag = 0
+    flag_top = 0
+    flag_right = 0
     div = {}
     div[0] = ET.SubElement(form, "div")
     div[0].set('class', 'container_' + str(z))
+    # div[0].text = str(z)
     for i in range(len(xy_sorted)):
         # Create all divs #
-        div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "div")
-        if xy_sorted[i][1][9] == "group":
-            div[xy_sorted[i][0]].set(
-                'class', 'div_group' + str(z) +
-                ' div' + str(z) + '_' + str(xy_sorted[i][0]))
-        else:
-            div[xy_sorted[i][0]].set(
-                'class', 'div' + str(z) +
-                ' div' + str(z) + '_' + str(xy_sorted[i][0]))
-        # div[xy_sorted[i][0]].text = str(xy_sorted[i][0])
-        # div[xy_sorted[i][0]].text = " "
-
-        # # Use Tesseract to recognize the text and display inside DIVs. #
-        if xy_sorted[i] not in xy_column.values():
-            if xy_sorted[i][1][2] == 0 \
-                    or xy_sorted[i][1][3] == 0 \
-                    or xy_sorted[i][1][4] < 0 \
-                    or xy_sorted[i][1][5] < 0 \
-                    or xy_sorted[i][1][0] > w \
-                    or xy_sorted[i][1][1] > h:
-                div[xy_sorted[i][0]].text = " "
+        # div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "div")
+        if xy[xy_sorted[i][1][7] - 1][1][9] not in ["button", "textinput", "input", "textarea"]:
+            if xy_sorted[i][1][9] == "select":
+                div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "select")
+            elif xy_sorted[i][1][9] == "textinput" or xy_sorted[i][1][9] == "input":
+                div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "input")
+            elif xy_sorted[i][1][9] == "textarea":
+                div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "textarea")
+            elif xy_sorted[i][1][9] == "button":
+                div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "button")
+            elif xy_sorted[i][1][9] == "checkbox":
+                div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "input")
+                div[xy_sorted[i][0]].set('type', 'checkbox')
+            elif xy_sorted[i][1][9] == "radiobutton":
+                div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "input")
+                div[xy_sorted[i][0]].set('type', 'radio')
+            elif xy_sorted[i][1][9] == "form":
+                div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "form")
+            elif xy_sorted[i][1][9] == "menu":
+                div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "menu")
+            elif xy_sorted[i][1][9] == "li" or xy_sorted[i][1][9] == "list" or xy_sorted[i][1][9] == "listItem":
+                div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "li")
             else:
-                if xy_sorted[i][1][0] < 0:
-                    left_x = 0
-                else:
-                    left_x = xy_sorted[i][1][0]
+                div[xy_sorted[i][0]] = ET.SubElement(div[xy_sorted[i][1][6]], "div")
+            if xy_sorted[i][1][9] == "group":
+                div[xy_sorted[i][0]].set(
+                    'class', 'div_group' + str(z) +
+                    ' div' + str(z) + '_' + str(xy_sorted[i][0]))
+            else:
+                div[xy_sorted[i][0]].set(
+                    'class', 'div' + str(z) +
+                    ' div' + str(z) + '_' + str(xy_sorted[i][0]))
+            # div[xy_sorted[i][0]].text = str(xy_sorted[i][0])
+            # div[xy_sorted[i][0]].text = " "
 
-                if xy_sorted[i][1][1] < 0:
-                    left_y = 0
+            # Use Tesseract to recognize the text and display inside DIVs. #
+            if xy_sorted[i][1][9] in ["textinput", "input"]:
+                if xy_sorted[i][1][2] == 0 \
+                        or xy_sorted[i][1][3] == 0 \
+                        or xy_sorted[i][1][4] < 0 \
+                        or xy_sorted[i][1][5] < 0 \
+                        or xy_sorted[i][1][0] > w \
+                        or xy_sorted[i][1][1] > h:
+                    div[xy_sorted[i][0]].set('value', '')
                 else:
-                    left_y = xy_sorted[i][1][1]
+                    if xy_sorted[i][1][0] < 0:
+                        left_x = 0
+                    else:
+                        left_x = xy_sorted[i][1][0]
 
-                if xy_sorted[i][1][4] + 1 > w:
-                    right_x = w
-                else:
-                    right_x = xy_sorted[i][1][4] + 1
+                    if xy_sorted[i][1][1] < 0:
+                        left_y = 0
+                    else:
+                        left_y = xy_sorted[i][1][1]
 
-                if xy_sorted[i][1][5] + 1 > h:
-                    right_y = h
-                else:
-                    right_y = xy_sorted[i][1][5] + 1
+                    if xy_sorted[i][1][4] + 1 > w:
+                        right_x = w
+                    else:
+                        right_x = xy_sorted[i][1][4] + 1
 
-                img_crop = img[
-                           int(left_y): int(right_y),
-                           int(left_x): int(right_x)
-                           ]
-                data = ocr_recognition(img_crop)
-                if data[1]:
-                    div[xy_sorted[i][0]].text = str(data[1])
-                    div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
-                        font-size: """ + str(data[0]) + """px;
-                    }
-                    """
-                else:
+                    if xy_sorted[i][1][5] + 1 > h:
+                        right_y = h
+                    else:
+                        right_y = xy_sorted[i][1][5] + 1
+
+                    img_crop = img[
+                               int(left_y): int(right_y),
+                               int(left_x): int(right_x)
+                               ]
+                    data = ocr_recognition(img_crop)
+                    if data[1]:
+                        div[xy_sorted[i][0]].set('value', str(data[1]))
+                        div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
+                            font-size: """ + str(data[0]) + """px;
+                        }
+                        """
+                    else:
+                        div[xy_sorted[i][0]].set('value', '')
+
+            elif (xy_sorted[i][1][9] in ["button", "textarea"]) or (xy_sorted[i] not in xy_column.values()):
+                if xy_sorted[i][1][2] == 0 \
+                        or xy_sorted[i][1][3] == 0 \
+                        or xy_sorted[i][1][4] < 0 \
+                        or xy_sorted[i][1][5] < 0 \
+                        or xy_sorted[i][1][0] > w \
+                        or xy_sorted[i][1][1] > h:
                     div[xy_sorted[i][0]].text = " "
-        else:
-            div[xy_sorted[i][0]].text = " "
+                else:
+                    if xy_sorted[i][1][0] < 0:
+                        left_x = 0
+                    else:
+                        left_x = xy_sorted[i][1][0]
 
-        # If it is the first rectangle in xy_sorted, establish it directly. #
-        if i == 0:
-            div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
-                margin-left: """ + str(xy_sorted[i][1][0]) + """px;
-                margin-top: """ + str(xy_sorted[i][1][1]) + """px;
-                width: """ + str(xy_sorted[i][1][2]) + """px;
-                height: """ + str(xy_sorted[i][1][3]) + """px;
-            }
-            """
-        # If two rectangles belong to the same outer rectangle. #
-        elif xy_sorted[i][1][7] == xy_sorted[i - 1][1][7]:
-            # Check if the two rectangles are in the same row:
-            # The first rectangle is higher than the second rectangle
-            # OR the second rectangle is higher than the first rectangle
-            if (xy_sorted[i - 1][1][5] > xy_sorted[i][1][1]
-                    >= xy_sorted[i - 1][1][1]
-                    or xy_sorted[i][1][5] > xy_sorted[i - 1][1][1]
-                    >= xy_sorted[i][1][1]):
-                left = xy_sorted[i - 1][1][4]
+                    if xy_sorted[i][1][1] < 0:
+                        left_y = 0
+                    else:
+                        left_y = xy_sorted[i][1][1]
+
+                    if xy_sorted[i][1][4] + 1 > w:
+                        right_x = w
+                    else:
+                        right_x = xy_sorted[i][1][4] + 1
+
+                    if xy_sorted[i][1][5] + 1 > h:
+                        right_y = h
+                    else:
+                        right_y = xy_sorted[i][1][5] + 1
+
+                    img_crop = img[
+                               int(left_y): int(right_y),
+                               int(left_x): int(right_x)
+                               ]
+                    data = ocr_recognition(img_crop)
+                    if data[1]:
+                        div[xy_sorted[i][0]].text = str(data[1])
+                        if xy_sorted[i][1][9] in ["button", "textarea"]:
+                            div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
+                                font-size: """ + str(data[0]) + """px;
+                                text-align: center;
+                            }
+                            """
+                        else:
+                            div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
+                                font-size: """ + str(data[0]) + """px;
+                            }
+                            """
+                    else:
+                        div[xy_sorted[i][0]].text = " "
+
+            # If it is the first rectangle in xy_sorted, establish it directly. #
+            if i == 0:
                 div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
-                    margin-left: """ + str(xy_sorted[i][1][0] - left) + """px;
-                    margin-top: """ + str(xy_sorted[i][1][1] - top) + """px;
+                    margin-left: """ + str(xy_sorted[i][1][0]) + """px;
+                    margin-top: """ + str(xy_sorted[i][1][1]) + """px;
                     width: """ + str(xy_sorted[i][1][2]) + """px;
                     height: """ + str(xy_sorted[i][1][3]) + """px;
                 }
                 """
-                # Check which rectangle's is lower. #
-                if xy_sorted[i][1][5] > xy_sorted[flag][1][5]:
-                    flag = i
-            # if the two rectangles are not in the same row. #
-            else:
-                if xy_sorted[i][1][7] == 0:
-                    left = 0
+            # If two rectangles belong to the same outer rectangle. #
+            elif xy_sorted[i][1][7] == xy_sorted[i - 1][1][7]:
+                # Check if the two rectangles are in the same row:
+                # The first rectangle is higher than the second rectangle
+                # OR the second rectangle is higher than the first rectangle
+                if (xy_sorted[i - 1][1][5] > xy_sorted[i][1][1]
+                        >= xy_sorted[i - 1][1][1]
+                        or xy_sorted[i][1][5] > xy_sorted[i - 1][1][1]
+                        >= xy_sorted[i][1][1]) \
+                        or xy_sorted[i - 1][1][5] > xy_sorted[i][1][5] \
+                        > xy_sorted[i][1][1] > xy_sorted[i - 1][1][1] \
+                        or xy_sorted[i][1][5] > xy_sorted[i - 1][1][5] \
+                        > xy_sorted[i - 1][1][1] > xy_sorted[i][1][1]:
+                    left = xy_sorted[flag_right][1][4]
+                    div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
+                        margin-left: """ + str(xy_sorted[i][1][0] - left) + """px;
+                        margin-top: """ + str(xy_sorted[i][1][1] - top) + """px;
+                        width: """ + str(xy_sorted[i][1][2]) + """px;
+                        height: """ + str(xy_sorted[i][1][3]) + """px;
+                    }
+                    """
+                    # Check which rectangle's is lower. #
+                    if xy_sorted[i][1][5] > xy_sorted[flag_top][1][5]:
+                        flag_top = i
+                    # Check which rectangle's is longer. #
+                    if xy_sorted[i][1][4] > xy_sorted[flag_right][1][4]:
+                        flag_right = i
+                # if the two rectangles are not in the same row. #
                 else:
-                    left = xy[xy_sorted[i][1][7] - 1][1][0]
-                top = xy_sorted[flag][1][5]
-                flag = i
+                    if xy_sorted[i][1][7] == 0:
+                        left = 0
+                    else:
+                        left = xy[xy_sorted[i][1][7] - 1][1][0]
+                    top = xy_sorted[flag_top][1][5]
+                    flag_top = i
+                    flag_right = i
+                    div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
+                        clear: both;
+                        margin-left: """ + str(xy_sorted[i][1][0] - left) + """px;
+                        margin-top: """ + str(xy_sorted[i][1][1] - top) + """px;
+                        width: """ + str(xy_sorted[i][1][2]) + """px;
+                        height: """ + str(xy_sorted[i][1][3]) + """px;
+                    }
+                    """
+            # If two rectangles do not belong to the same outer rectangle. #
+            else:
+                flag_top = i
+                flag_right = i
+                left = xy[xy_sorted[i][1][7] - 1][1][0]
+                top = xy[xy_sorted[i][1][7] - 1][1][1]
                 div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
                     clear: both;
                     margin-left: """ + str(xy_sorted[i][1][0] - left) + """px;
@@ -447,19 +557,6 @@ for z in range(len(keys)):
                     height: """ + str(xy_sorted[i][1][3]) + """px;
                 }
                 """
-        # If two rectangles do not belong to the same outer rectangle. #
-        else:
-            flag = i
-            left = xy[xy_sorted[i][1][7] - 1][1][0]
-            top = xy[xy_sorted[i][1][7] - 1][1][1]
-            div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
-                clear: both;
-                margin-left: """ + str(xy_sorted[i][1][0] - left) + """px;
-                margin-top: """ + str(xy_sorted[i][1][1] - top) + """px;
-                width: """ + str(xy_sorted[i][1][2]) + """px;
-                height: """ + str(xy_sorted[i][1][3]) + """px;
-            }
-            """
 
 # Convert to XML #
 tree = ET.ElementTree(form)

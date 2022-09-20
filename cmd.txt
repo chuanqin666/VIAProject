@@ -18,3 +18,4 @@ python val.py val_json/via_export_json.json
 python val.py val_json/via_export_json_raw_data_100.json
 python val.py val_json/via_export_jsonn_08072020.json
 python val.py val_json/test.json
+python OCR.py val_json/val.json
