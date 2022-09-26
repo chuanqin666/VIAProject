@@ -15,8 +15,7 @@
 
 ## MAIN FILE
 
-* main.py: The main python file for this project, 
-to read the json document of VIA format image and output the relevant HTML file
+* main.py: The main python file for this project, to read the json document of VIA format image and output the relevant HTML file
 * one-rectangle.py: The main python file for 1-rectangle case, concentrate on relative position layout.
 * div.py: A test file for a whole web layout, including header, body and footer.
 * vertical-div.py: The main python file for vertical case, concentrate on relative position layout.
@@ -44,7 +43,9 @@ to read the json document of VIA format image and output the relevant HTML file
 * image folder: Store the images in this project
 * json-doc folder: Store the Json file in this project
 * val_json folder: Store all Json files used in this val.py
-* val_img folder: Store all image files used in this val.py
+* val_img folder: Explain the algorithms applied to the scripts.
+
+* val diagram.png: Store all image files used in this val.py
 
 - Documents for developers, not so important:
   * cmd.txt: Record some commands to remind me.

@@ -331,7 +331,6 @@ for z in range(len(keys)):
             }
             .div""" + str(z) + """ {
                 position: relative;
-                text-align: left;
                 display: block;
                 color: red;
                 float: left;
@@ -341,12 +340,10 @@ for z in range(len(keys)):
             }
             .div_group""" + str(z) + """ {
                 position: relative;
-                text-align: left;
                 display: block;
                 color: red;
                 float: left;
                 background-color: transparent;
-                outline: 3px solid red;
             }
             """
 
@@ -394,101 +391,101 @@ for z in range(len(keys)):
                     'class', 'div' + str(z) +
                     ' div' + str(z) + '_' + str(xy_sorted[i][0]))
             # div[xy_sorted[i][0]].text = str(xy_sorted[i][0])
-            # div[xy_sorted[i][0]].text = " "
+            div[xy_sorted[i][0]].text = " "
 
             # Use Tesseract to recognize the text and display inside DIVs. #
-            if xy_sorted[i][1][9] in ["textinput", "input"]:
-                if xy_sorted[i][1][2] == 0 \
-                        or xy_sorted[i][1][3] == 0 \
-                        or xy_sorted[i][1][4] < 0 \
-                        or xy_sorted[i][1][5] < 0 \
-                        or xy_sorted[i][1][0] > w \
-                        or xy_sorted[i][1][1] > h:
-                    div[xy_sorted[i][0]].set('value', '')
-                else:
-                    if xy_sorted[i][1][0] < 0:
-                        left_x = 0
-                    else:
-                        left_x = xy_sorted[i][1][0]
-
-                    if xy_sorted[i][1][1] < 0:
-                        left_y = 0
-                    else:
-                        left_y = xy_sorted[i][1][1]
-
-                    if xy_sorted[i][1][4] + 1 > w:
-                        right_x = w
-                    else:
-                        right_x = xy_sorted[i][1][4] + 1
-
-                    if xy_sorted[i][1][5] + 1 > h:
-                        right_y = h
-                    else:
-                        right_y = xy_sorted[i][1][5] + 1
-
-                    img_crop = img[
-                               int(left_y): int(right_y),
-                               int(left_x): int(right_x)
-                               ]
-                    data = ocr_recognition(img_crop)
-                    if data[1]:
-                        div[xy_sorted[i][0]].set('value', str(data[1]))
-                        div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
-                            font-size: """ + str(data[0]) + """px;
-                        }
-                        """
-                    else:
-                        div[xy_sorted[i][0]].set('value', '')
-
-            elif (xy_sorted[i][1][9] in ["button", "textarea"]) or (xy_sorted[i] not in xy_column.values()):
-                if xy_sorted[i][1][2] == 0 \
-                        or xy_sorted[i][1][3] == 0 \
-                        or xy_sorted[i][1][4] < 0 \
-                        or xy_sorted[i][1][5] < 0 \
-                        or xy_sorted[i][1][0] > w \
-                        or xy_sorted[i][1][1] > h:
-                    div[xy_sorted[i][0]].text = " "
-                else:
-                    if xy_sorted[i][1][0] < 0:
-                        left_x = 0
-                    else:
-                        left_x = xy_sorted[i][1][0]
-
-                    if xy_sorted[i][1][1] < 0:
-                        left_y = 0
-                    else:
-                        left_y = xy_sorted[i][1][1]
-
-                    if xy_sorted[i][1][4] + 1 > w:
-                        right_x = w
-                    else:
-                        right_x = xy_sorted[i][1][4] + 1
-
-                    if xy_sorted[i][1][5] + 1 > h:
-                        right_y = h
-                    else:
-                        right_y = xy_sorted[i][1][5] + 1
-
-                    img_crop = img[
-                               int(left_y): int(right_y),
-                               int(left_x): int(right_x)
-                               ]
-                    data = ocr_recognition(img_crop)
-                    if data[1]:
-                        div[xy_sorted[i][0]].text = str(data[1])
-                        if xy_sorted[i][1][9] in ["button", "textarea"]:
-                            div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
-                                font-size: """ + str(data[0]) + """px;
-                                text-align: center;
-                            }
-                            """
-                        else:
-                            div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
-                                font-size: """ + str(data[0]) + """px;
-                            }
-                            """
-                    else:
-                        div[xy_sorted[i][0]].text = " "
+            # if xy_sorted[i][1][9] in ["textinput", "input"]:
+            #     if xy_sorted[i][1][2] == 0 \
+            #             or xy_sorted[i][1][3] == 0 \
+            #             or xy_sorted[i][1][4] < 0 \
+            #             or xy_sorted[i][1][5] < 0 \
+            #             or xy_sorted[i][1][0] > w \
+            #             or xy_sorted[i][1][1] > h:
+            #         div[xy_sorted[i][0]].set('value', '')
+            #     else:
+            #         if xy_sorted[i][1][0] < 0:
+            #             left_x = 0
+            #         else:
+            #             left_x = xy_sorted[i][1][0]
+            #
+            #         if xy_sorted[i][1][1] < 0:
+            #             left_y = 0
+            #         else:
+            #             left_y = xy_sorted[i][1][1]
+            #
+            #         if xy_sorted[i][1][4] + 1 > w:
+            #             right_x = w
+            #         else:
+            #             right_x = xy_sorted[i][1][4] + 1
+            #
+            #         if xy_sorted[i][1][5] + 1 > h:
+            #             right_y = h
+            #         else:
+            #             right_y = xy_sorted[i][1][5] + 1
+            #
+            #         img_crop = img[
+            #                    int(left_y): int(right_y),
+            #                    int(left_x): int(right_x)
+            #                    ]
+            #         data = ocr_recognition(img_crop)
+            #         if data[1]:
+            #             div[xy_sorted[i][0]].set('value', str(data[1]))
+            #             div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
+            #                 font-size: """ + str(data[0]) + """px;
+            #             }
+            #             """
+            #         else:
+            #             div[xy_sorted[i][0]].set('value', '')
+            #
+            # elif (xy_sorted[i][1][9] in ["button", "textarea"]) or (xy_sorted[i] not in xy_column.values()):
+            #     if xy_sorted[i][1][2] == 0 \
+            #             or xy_sorted[i][1][3] == 0 \
+            #             or xy_sorted[i][1][4] < 0 \
+            #             or xy_sorted[i][1][5] < 0 \
+            #             or xy_sorted[i][1][0] > w \
+            #             or xy_sorted[i][1][1] > h:
+            #         div[xy_sorted[i][0]].text = " "
+            #     else:
+            #         if xy_sorted[i][1][0] < 0:
+            #             left_x = 0
+            #         else:
+            #             left_x = xy_sorted[i][1][0]
+            #
+            #         if xy_sorted[i][1][1] < 0:
+            #             left_y = 0
+            #         else:
+            #             left_y = xy_sorted[i][1][1]
+            #
+            #         if xy_sorted[i][1][4] + 1 > w:
+            #             right_x = w
+            #         else:
+            #             right_x = xy_sorted[i][1][4] + 1
+            #
+            #         if xy_sorted[i][1][5] + 1 > h:
+            #             right_y = h
+            #         else:
+            #             right_y = xy_sorted[i][1][5] + 1
+            #
+            #         img_crop = img[
+            #                    int(left_y): int(right_y),
+            #                    int(left_x): int(right_x)
+            #                    ]
+            #         data = ocr_recognition(img_crop)
+            #         if data[1]:
+            #             div[xy_sorted[i][0]].text = str(data[1])
+            #             if xy_sorted[i][1][9] in ["button", "textarea"]:
+            #                 div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
+            #                     font-size: """ + str(data[0]) + """px;
+            #                     text-align: center;
+            #                 }
+            #                 """
+            #             else:
+            #                 div_css = div_css + """.div""" + str(z) + """_""" + str(xy_sorted[i][0]) + """ {
+            #                     font-size: """ + str(data[0]) + """px;
+            #                 }
+            #                 """
+            #         else:
+            #             div[xy_sorted[i][0]].text = " "
 
             # If it is the first rectangle in xy_sorted, establish it directly. #
             if i == 0:

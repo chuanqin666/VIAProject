@@ -34,6 +34,9 @@ def sort(value_dict):
         xy[x][1][7] = 0
     for e in range(len(xy) - 1):
         for f in range(e + 1, len(xy)):
+            # If the two rectangles have the same left-top coordinates
+            # but the right-bottom coordinates are different
+            # put the outer rectangle in front.
             if xy[e][1][0] == xy[f][1][0] and xy[e][1][1] == xy[f][1][1]:
                 if (xy[f][1][4] > xy[e][1][4] and xy[f][1][5] >= xy[e][1][5]) \
                         or (xy[f][1][4] >= xy[e][1][4]
@@ -54,6 +57,7 @@ def sort(value_dict):
                 for k in range(len(xy)):
                     # Check all inner rectangles of each outer rectangle. #
                     if k is not i:
+                        # If xy[k] is inside xy_column[i]
                         if (xy_column[i][1][0] <= xy[k][1][0]
                             <= xy[k][1][4] <= xy_column[i][1][4]
                             and xy_column[i][1][1] <= xy[k][1][1]
@@ -64,6 +68,8 @@ def sort(value_dict):
                                          and xy[k][1][5]
                                          == xy_column[i][1][5]):
                             if xy[k][1][7] != 0:
+                                # If xy[k]'s original outer rectangle contains xy_column[i]
+                                # then change xy[k]'s outer rectangle to xy_column[i]
                                 if xy[xy[k][1][7] - 1][1][0] \
                                         <= xy_column[i][1][0] \
                                         <= xy_column[i][1][4] \
@@ -82,6 +88,9 @@ def sort(value_dict):
                                                  == xy[xy[k][1][7] - 1][1][5]):
                                     xy[k][1][6] = xy_column[i][0]
                                     xy[k][1][7] = i + 1
+                                # If xy[k]'s original outer rectangle equal to xy_column[i]
+                                # then if i > xy[k]'s original outer rectangle's number
+                                # then change xy[k]'s outer rectangle to xy_column[i]
                                 elif (xy[xy[k][1][7] - 1][1][0]
                                       == xy_column[i][1][0]
                                       and xy_column[i][1][4]
@@ -96,6 +105,8 @@ def sort(value_dict):
                             else:
                                 xy[k][1][6] = xy_column[i][0]
                                 xy[k][1][7] = i + 1
+                        # If xy[k] is equal to xy_column[i]
+                        # if k > i then change xy[k]'s outer rectangle to xy_column[i]
                         elif (xy_column[i][1][0] == xy[k][1][0]
                               and xy[k][1][4] == xy_column[i][1][4]
                               and xy_column[i][1][1] == xy[k][1][1]
@@ -104,7 +115,7 @@ def sort(value_dict):
                                 xy[k][1][6] = xy_column[i][0]
                                 xy[k][1][7] = i + 1
 
-    # Sort in outer rectangle number first, then sort in left-top Y. #
+    # Sort in outer rectangle number first, then sort in left-top X. #
     xy_sorted = sorted(xy, key=lambda k: (k[1][7], k[1][0]))
     return xy_sorted, xy, xy_column
 
@@ -112,17 +123,18 @@ def sort(value_dict):
 def group(value, xy_sorted):
     num = len(value)
     nn = 0
-    li = []
+    li = []  # Record values grouped already in this loop
     fl = 0
     for a in range(len(xy_sorted)):
-        lf = a
-        rt = a
-        tp = a
-        bt = a
+        lf = a  # Group DIV's left-top X
+        rt = a  # Group DIV's right-bottom X
+        tp = a  # Group DIV's left-top Y
+        bt = a  # Group DIV's right-bottom Y
         if xy_sorted[a][0] not in li:
             for b in range(len(xy_sorted)):
                 if b is not a:
                     if xy_sorted[b][1][7] == xy_sorted[a][1][7]:
+                        # If xy_sorted[b] is on the right or left of xy_sorted[a]
                         if (xy_sorted[b][1][0] >= xy_sorted[a][1][4]
                             or xy_sorted[b][1][4] <= xy_sorted[a][1][0]) \
                                 and (xy_sorted[b][1][1] < xy_sorted[a][1][5]
@@ -135,6 +147,9 @@ def group(value, xy_sorted):
                                     if c not in (a, b):
                                         if xy_sorted[c][1][7] \
                                                 == xy_sorted[b][1][7]:
+                                            # If c is on the right or left of b
+                                            # And c below a, c above b
+                                            # The border of C is within group DIV
                                             if (xy_sorted[b][1][0]
                                                 >= xy_sorted[c][1][4]
                                                 or xy_sorted[b][1][4]
@@ -149,6 +164,7 @@ def group(value, xy_sorted):
                                                 fl += 1
                                                 li.append(xy_sorted[a][0])
                                                 li.append(xy_sorted[c][0])
+                                                # If the boundary of C exceeds group DIV, update the value of group DIV
                                                 if xy_sorted[c][1][5] \
                                                         > xy_sorted[bt][1][5]:
                                                     bt = c
@@ -164,11 +180,13 @@ def group(value, xy_sorted):
                                                 if xy_sorted[c][1][5] \
                                                         >= xy_sorted[b][1][5] \
                                                         > xy_sorted[c][1][1]:
+                                                    # d is only used to detect overlapped cases.
                                                     for d in range(len(xy_sorted)):
                                                         if xy_sorted[d][0] not in li:
                                                             if d not in (a, b, c):
                                                                 if xy_sorted[d][1][7] \
                                                                         == xy_sorted[c][1][7]:
+                                                                    # If d and c are overlapped, then group DIV includes d as well
                                                                     if xy_sorted[b][1][5] \
                                                                             <= xy_sorted[d][1][1] \
                                                                             <= xy_sorted[bt][1][5] \
@@ -195,6 +213,8 @@ def group(value, xy_sorted):
                                                                         if xy_sorted[d][1][0] \
                                                                                 < xy_sorted[lf][1][0]:
                                                                             lf = d
+        # If one of the lf/rt/tp/bt has changed, then build a new group DIV.
+        # New group DIV add into value[]
         if (xy_sorted[a][1][0] is not xy_sorted[lf][1][0]) \
                 or (xy_sorted[a][1][1] is not xy_sorted[tp][1][1]) \
                 or (xy_sorted[a][1][4] is not xy_sorted[rt][1][4]) \
@@ -518,10 +538,10 @@ for z in range(len(keys)):
                         height: """ + str(xy_sorted[i][1][3]) + """px;
                     }
                     """
-                    # Check which rectangle's is lower. #
+                    # Check which rectangle is lower. #
                     if xy_sorted[i][1][5] > xy_sorted[flag_top][1][5]:
                         flag_top = i
-                    # Check which rectangle's is longer. #
+                    # Check which rectangle is longer. #
                     if xy_sorted[i][1][4] > xy_sorted[flag_right][1][4]:
                         flag_right = i
                 # if the two rectangles are not in the same row. #
